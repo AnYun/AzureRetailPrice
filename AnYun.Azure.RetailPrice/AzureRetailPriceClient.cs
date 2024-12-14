@@ -15,9 +15,9 @@ namespace AnYun.Azure.RetailPrice
         private readonly HttpClient _httpClient;
         private const string _baseUrl = "https://prices.azure.com/api/retail/prices?api-version=2023-01-01-preview";
 
-        public AzureRetailPriceClient(HttpClient httpClient)
+        public AzureRetailPriceClient()
         {
-            _httpClient = httpClient;
+            _httpClient = new HttpClient();
         }
 
         public async Task<AzureRetailPriceResponse> GetPricesAsync()
