@@ -3,6 +3,7 @@ using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Linq.Expressions;
+using System.Net;
 using System.Text;
 using System.Threading.Tasks;
 
@@ -81,7 +82,8 @@ namespace AnYun.Azure.RetailPrice
             {
                 if (node.Type == typeof(string))
                 {
-                    _filterBuilder.Append($"'{node.Value}'");
+                    //_filterBuilder.Append($"'{node.Value}'");
+                    _filterBuilder.Append($"'{WebUtility.UrlEncode(node.Value.ToString())}'");
                 }
                 else if (node.Type.IsGenericType && node.Type.GetGenericTypeDefinition() == typeof(List<>))
                 {
