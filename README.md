@@ -50,4 +50,4 @@ namespace PriceTest
 ```
 
 ## License  
-This project is licensed under the MIT License. For details, please refer to [LICENSE.txt](LICENSE).
+This project is licensed under the MIT License. For details, please refer to [LICENSE](LICENSE.txt).
