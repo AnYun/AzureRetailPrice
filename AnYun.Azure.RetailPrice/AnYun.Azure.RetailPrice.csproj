@@ -11,6 +11,7 @@
     <Description>AnYun.Azure.RetailPrice is an SDK for querying Azure service prices. It provides an easy-to-use API that allows developers to effortlessly retrieve pricing information for various Azure services.</Description>
     <PackageTags>Azure,RetailPrice</PackageTags>
     <PackageLicenseFile>LICENSE.txt</PackageLicenseFile>
+    <RepositoryUrl>https://github.com/AnYun/AzureRetailPrice</RepositoryUrl>
   </PropertyGroup>
 
   <ItemGroup>
