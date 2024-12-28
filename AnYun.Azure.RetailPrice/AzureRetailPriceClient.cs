@@ -122,14 +122,12 @@ namespace AnYun.Azure.RetailPrice
             _nextPageLink = response.NextPageLink;
             return response;
         }
+
         /// <summary>
         /// Has Next Page
         /// </summary>
         /// <returns></returns>
-        public bool HasNextPage()
-        {
-            return !string.IsNullOrEmpty(_nextPageLink);
-        }
+        public bool HasNextPage => !string.IsNullOrEmpty(_nextPageLink);
         /// <summary>
         /// Get Next Page
         /// </summary>

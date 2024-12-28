@@ -28,19 +28,16 @@ namespace PriceTest
     {
         static async Task Main(string[] args)
         {
-            var service = new AzureRetailPriceClient();
-            string nextPageLink = null;
+            var client = new AzureRetailPriceClient();
             var result = new List<AzureRetailPriceItem>();
 
-            var prices = await service.GetPricesAsync(x => x.ServiceFamily == "AI + Machine Learning");
-            nextPageLink = prices.NextPageLink;
+            var prices = await client.GetPricesAsync(x => x.ServiceFamily == "AI + Machine Learning");
             result.AddRange(prices.Items);
 
-            while (!string.IsNullOrEmpty(nextPageLink))
+            while (client.HasNextPage)
             {
-                prices = await service.GetPricesAsync(nextPageLink);
+                prices = await client.GetNextPageAsync();
                 result.AddRange(prices.Items);
-                nextPageLink = prices.NextPageLink;
             }
 
             Console.WriteLine($"Total items: {result.Count}");
