@@ -96,32 +96,50 @@ namespace AnYun.Azure.RetailPrice
         /// <returns></returns>
         public async Task GetPricesAsync(CurrencyCode? currencyCode, bool isPrimaryMeterRegion, string nextPageLink = null, Expression<Func<AzureRetailPriceQuery, bool>> filterExpression = null)
         {
-            var url = "";
-
-            if (nextPageLink == null)
-            {
-                url = _baseUrl;
-
-                if (currencyCode != null) url += $"&currencyCode={currencyCode}";
-
-                if (isPrimaryMeterRegion) url += $"&meterRegion='primary'";
-
-                var query = new List<AzureRetailPriceQuery>().AsQueryable();
-
-                if (filterExpression != null) query = query.Where(filterExpression);
-
-                var filter = query.ToODataFilter();
-                if (!string.IsNullOrEmpty(filter)) url += $"&$filter={filter}";
-            }
-            else
-            {
-                url = nextPageLink;
-            }
+            var url = BuildUrl(currencyCode, isPrimaryMeterRegion, nextPageLink, filterExpression);
 
             _response = await _httpClient.GetFromJsonAsync<AzureRetailPriceResponse>(url);
             _response.RequestUrl = url;
         }
+        /// <summary>
+        /// Build Url
+        /// </summary>
+        /// <param name="currencyCode"></param>
+        /// <param name="isPrimaryMeterRegion"></param>
+        /// <param name="nextPageLink"></param>
+        /// <param name="filterExpression"></param>
+        /// <returns></returns>
+        private string BuildUrl(CurrencyCode? currencyCode, bool isPrimaryMeterRegion, string nextPageLink, Expression<Func<AzureRetailPriceQuery, bool>> filterExpression)
+        {
+            if (nextPageLink != null)
+            {
+                return nextPageLink;
+            }
 
+            var url = new StringBuilder(_baseUrl);
+
+            if (currencyCode != null)
+            {
+                url.Append($"&currencyCode={currencyCode}");
+            }
+
+            if (isPrimaryMeterRegion)
+            {
+                url.Append("&meterRegion='primary'");
+            }
+
+            if (filterExpression != null)
+            {
+                var query = new List<AzureRetailPriceQuery>().AsQueryable().Where(filterExpression);
+                var filter = query.ToODataFilter();
+                if (!string.IsNullOrEmpty(filter))
+                {
+                    url.Append($"&$filter={filter}");
+                }
+            }
+
+            return url.ToString();
+        }
         /// <summary>
         /// Has Next Page
         /// </summary>
