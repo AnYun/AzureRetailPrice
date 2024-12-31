@@ -14,7 +14,8 @@ namespace AnYun.Azure.RetailPrice
     {
         private readonly HttpClient _httpClient;
         private const string _baseUrl = "https://prices.azure.com/api/retail/prices?api-version=2023-01-01-preview";
-        private string _nextPageLink;
+        private AzureRetailPriceResponse _response;
+        public AzureRetailPriceResponse response => _response;
 
         public AzureRetailPriceClient()
         {
@@ -24,45 +25,45 @@ namespace AnYun.Azure.RetailPrice
         /// Get Azure Retail Prices
         /// </summary>
         /// <returns></returns>
-        public async Task<AzureRetailPriceResponse> GetPricesAsync()
+        public async Task GetPricesAsync()
         {
-            return await GetPricesAsync(null, false, null, null);
+            await GetPricesAsync(null, false, null, null);
         }
         /// <summary>
         /// Get Azure Retail Prices
         /// </summary>
         /// <param name="currencyCode">Currency Code</param>
         /// <returns></returns>
-        public async Task<AzureRetailPriceResponse> GetPricesAsync(CurrencyCode currencyCode)
+        public async Task GetPricesAsync(CurrencyCode currencyCode)
         {
-            return await GetPricesAsync(currencyCode, false, null, null);
+            await GetPricesAsync(currencyCode, false, null, null);
         }
         /// <summary>
         /// Get Azure Retail Prices
         /// </summary>
         /// <param name="nextPageLink">NextPage Link</param>
         /// <returns></returns>
-        public async Task<AzureRetailPriceResponse> GetPricesAsync(string nextPageLink)
+        public async Task GetPricesAsync(string nextPageLink)
         {
-            return await GetPricesAsync(null, false, nextPageLink, null);
+            await GetPricesAsync(null, false, nextPageLink, null);
         }
         /// <summary>
         /// Get Azure Retail Prices
         /// </summary>
         /// <param name="filterExpression">filterExpression</param>
         /// <returns></returns>
-        public async Task<AzureRetailPriceResponse> GetPricesAsync(Expression<Func<AzureRetailPriceQuery, bool>> filterExpression)
+        public async Task GetPricesAsync(Expression<Func<AzureRetailPriceQuery, bool>> filterExpression)
         {
-            return await GetPricesAsync(null, false, null, filterExpression);
+            await GetPricesAsync(null, false, null, filterExpression);
         }
         /// <summary>
         /// Get Azure Retail Prices
         /// </summary>
         /// <param name="isPrimaryMeterRegion">Is Primary MeterRegion</param>
         /// <returns></returns>
-        public async Task<AzureRetailPriceResponse> GetPricesAsync(bool isPrimaryMeterRegion)
+        public async Task GetPricesAsync(bool isPrimaryMeterRegion)
         {
-            return await GetPricesAsync(null, isPrimaryMeterRegion, null, null);
+            await GetPricesAsync(null, isPrimaryMeterRegion, null, null);
         }
         /// <summary>
         /// Get Azure Retail Prices
@@ -70,9 +71,9 @@ namespace AnYun.Azure.RetailPrice
         /// <param name="currencyCode">Currency Code</param>
         /// <param name="filterExpression">filterExpression</param>
         /// <returns></returns>
-        public async Task<AzureRetailPriceResponse> GetPricesAsync(CurrencyCode currencyCode, Expression<Func<AzureRetailPriceQuery, bool>> filterExpression)
+        public async Task GetPricesAsync(CurrencyCode currencyCode, Expression<Func<AzureRetailPriceQuery, bool>> filterExpression)
         {
-            return await GetPricesAsync(currencyCode, false, null, filterExpression);
+            await GetPricesAsync(currencyCode, false, null, filterExpression);
         }
         /// <summary>
         /// Get Azure Retail Prices
@@ -81,9 +82,9 @@ namespace AnYun.Azure.RetailPrice
         /// <param name="isPrimaryMeterRegion">Is Primary MeterRegion</param>
         /// <param name="filterExpression">filterExpression</param>
         /// <returns></returns>
-        public async Task<AzureRetailPriceResponse> GetPricesAsync(CurrencyCode currencyCode, bool isPrimaryMeterRegion, Expression<Func<AzureRetailPriceQuery, bool>> filterExpression)
+        public async Task GetPricesAsync(CurrencyCode currencyCode, bool isPrimaryMeterRegion, Expression<Func<AzureRetailPriceQuery, bool>> filterExpression)
         {
-            return await GetPricesAsync(currencyCode, isPrimaryMeterRegion, null, filterExpression);
+            await GetPricesAsync(currencyCode, isPrimaryMeterRegion, null, filterExpression);
         }
         /// <summary>
         /// Get Azure Retail Prices
@@ -93,7 +94,7 @@ namespace AnYun.Azure.RetailPrice
         /// <param name="nextPageLink">NextPage Link</param>
         /// <param name="filterExpression">filterExpression</param>
         /// <returns></returns>
-        public async Task<AzureRetailPriceResponse> GetPricesAsync(CurrencyCode? currencyCode, bool isPrimaryMeterRegion, string nextPageLink = null, Expression<Func<AzureRetailPriceQuery, bool>> filterExpression = null)
+        public async Task GetPricesAsync(CurrencyCode? currencyCode, bool isPrimaryMeterRegion, string nextPageLink = null, Expression<Func<AzureRetailPriceQuery, bool>> filterExpression = null)
         {
             var url = "";
 
@@ -117,25 +118,25 @@ namespace AnYun.Azure.RetailPrice
                 url = nextPageLink;
             }
 
-            var response = await _httpClient.GetFromJsonAsync<AzureRetailPriceResponse>(url);
-            response.RequestUrl = url;
-            _nextPageLink = response.NextPageLink;
-            return response;
+            _response = await _httpClient.GetFromJsonAsync<AzureRetailPriceResponse>(url);
+            _response.RequestUrl = url;
         }
 
         /// <summary>
         /// Has Next Page
         /// </summary>
         /// <returns></returns>
-        public bool HasNextPage => !string.IsNullOrEmpty(_nextPageLink);
+        public bool HasNextPage => !string.IsNullOrEmpty(_response?.NextPageLink);
         /// <summary>
         /// Get Next Page
         /// </summary>
         /// <returns></returns>
-        public async Task<AzureRetailPriceResponse> GetNextPageAsync()
+        public async Task NextPageAsync()
         {
-            if (string.IsNullOrEmpty(_nextPageLink)) return null;
-            return await GetPricesAsync(_nextPageLink);
+            if (HasNextPage == false)
+                _response = null;
+            else
+                await GetPricesAsync(_response.NextPageLink);
         }
     }
 }
