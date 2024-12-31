@@ -12,14 +12,15 @@ namespace AnYun.Azure.RetailPrice
 {
     public class AzureRetailPriceClient
     {
-        private readonly HttpClient _httpClient;
-        private const string _baseUrl = "https://prices.azure.com/api/retail/prices?api-version=2023-01-01-preview";
+        private static readonly HttpClient _httpClient = new HttpClient();
+        private const string BaseUrl = "https://prices.azure.com/api/retail/prices";
+        private const string ApiVersion = "2023-01-01-preview";
         private AzureRetailPriceResponse _response;
         public AzureRetailPriceResponse response => _response;
 
         public AzureRetailPriceClient()
         {
-            _httpClient = new HttpClient();
+
         }
         /// <summary>
         /// Get Azure Retail Prices
@@ -96,10 +97,24 @@ namespace AnYun.Azure.RetailPrice
         /// <returns></returns>
         public async Task GetPricesAsync(CurrencyCode? currencyCode, bool isPrimaryMeterRegion, string nextPageLink = null, Expression<Func<AzureRetailPriceQuery, bool>> filterExpression = null)
         {
-            var url = BuildUrl(currencyCode, isPrimaryMeterRegion, nextPageLink, filterExpression);
-
-            _response = await _httpClient.GetFromJsonAsync<AzureRetailPriceResponse>(url);
-            _response.RequestUrl = url;
+            try
+            {
+                var url = BuildUrl(currencyCode, isPrimaryMeterRegion, nextPageLink, filterExpression);
+                _response = await _httpClient.GetFromJsonAsync<AzureRetailPriceResponse>(url);
+                _response.RequestUrl = url;
+            }
+            catch (HttpRequestException ex)
+            {
+                // Handle request errors
+                Console.WriteLine($"Request error: {ex.Message}");
+                throw;
+            }
+            catch (Exception ex)
+            {
+                // Handle unexpected errors
+                Console.WriteLine($"Unexpected error: {ex.Message}");
+                throw;
+            }
         }
         /// <summary>
         /// Build Url
@@ -116,7 +131,7 @@ namespace AnYun.Azure.RetailPrice
                 return nextPageLink;
             }
 
-            var url = new StringBuilder(_baseUrl);
+            var url = new StringBuilder($"{BaseUrl}?api-version={ApiVersion}");
 
             if (currencyCode != null)
             {
