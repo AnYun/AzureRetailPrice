@@ -31,13 +31,13 @@ namespace PriceTest
             var client = new AzureRetailPriceClient();
             var result = new List<AzureRetailPriceItem>();
 
-            var prices = await client.GetPricesAsync(x => x.ServiceFamily == "AI + Machine Learning");
-            result.AddRange(prices.Items);
+            await client.GetPricesAsync(x => x.ServiceFamily == "AI + Machine Learning");
+            result.AddRange(client.response.Items);
 
             while (client.HasNextPage)
             {
-                prices = await client.GetNextPageAsync();
-                result.AddRange(prices.Items);
+                await client.NextPageAsync();
+                result.AddRange(client.response.Items);
             }
 
             Console.WriteLine($"Total items: {result.Count}");
